@@ -2,6 +2,7 @@
 # Usage: makeRSSfeed.sh [Time(s)]
 use MP3::Tag;
 use File::Basename;
+use Data::Dumper;
 
 $RSSFEED="podcast.xml";
 $DOCROOT="http://192.168.11.5/radio";
@@ -31,12 +32,13 @@ s/</&lt;/g foreach @mp3tag;
 s/>/&gt;/g foreach @mp3tag;
 s/'/&apos;/g foreach @mp3tag;
 s/"/&quot;/g foreach @mp3tag;
+s/( mixi.+ )//g foreach @mp3tag;
 
 ($title, $track, $artist, $album, $comment, $year, $genre) = @mp3tag;
 
-unless($title){
-$title=$mp3file;
-}
+#unless($title){
+#$title=$mp3file;
+#}
 
 $basename = basename($mp3file);
 $YYYY = substr($basename,0,4);
@@ -45,7 +47,6 @@ $DD = substr($basename,6,2);
 $date = $YYYY."/".$MM."/".$DD;
 
 #print $title;
-
 $rss="<item>
 <title>$title</title>
 <description>$comment</description>

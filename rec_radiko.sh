@@ -1,7 +1,6 @@
 #!/bin/sh
 BASE64=/usr/bin/base64
 FFMPEG=/usr/local/bin/ffmpeg
-#GROWLNOTIFY=/usr/local/bin/growlnotify
 PERL=/usr/bin/perl
 RTMPDUMP=/usr/bin/rtmpdump
 SWFEXTRACT=/usr/local/bin/swfextract
@@ -11,16 +10,23 @@ playerurl=http://radiko.jp/player/swf/player_2.0.1.00.swf
 playerfile=./player.swf
 keyfile=./authkey.png
 
-if [ $# -eq 2 ]; then
+if [ $# -eq 3 ]; then
   CHANNEL=$1
   RECTIMEMIN=$2
+  FILENAME=$3
 else
-  echo "usage : $0 CHANNEL RECTIMEMIN OUTFILEPREFIX"
+  echo "usage : $0 CHANNEL RECTIMEMIN"
+  echo "CHANNEL:TFM BAY-FM J-WAVE NACK5 FMyokohama TBS QRR LFR NSB JORF"
   exit 1
 fi
 
-OUTFILEBASEPATH=/root
-cd $OUTFILEBASEPATH
+case $1 in
+ "TFM" ) CHANNEL=FMT;;
+ "BAY-FM" ) CHANNEL=BAYFM78;;
+ "J-WAVE" ) CHANNEL=FMJ;;
+ "NACK5" ) CHANNEL=NACK5;;
+ "FMyokohama" ) CHANNEL=YFM;;
+esac
 
 #
 # get player
@@ -117,7 +123,6 @@ rm -f auth2_fms
 MARGINTIMEMIN=0
 RECTIME=`expr $RECTIMEMIN \* 60 + $MARGINTIMEMIN \* 2 \* 60`
 
-#$GROWLNOTIFY -t $OUTFILEPREFIX -m 'start'
 
 #
 # rtmpdump
@@ -133,7 +138,4 @@ $RTMPDUMP -v \
 # afterplay
 #$FFMPEG -i - -vn -acodec libfaac $OUTFILEBASEPATH/`date +%y%m%d`-$OUTFILEPREFIX.m4a
 #$FFMPEG -i - -vn -acodec copy $OUTFILEBASEPATH/`date +%y%m%d`-$OUTFILEPREFIX.aac
-$FFMPEG -i - -vn -acodec libmp3lame -ab 128 -ar 44100 $OUTFILEBASEPATH/`date +%Y%m%d`.mp3
-
-#$GROWLNOTIFY -t $OUTFILEPREFIX -m 'finish'
-
+$FFMPEG -i - -vn -acodec libmp3lame -ab 128 -ar 44100 $FILENAME

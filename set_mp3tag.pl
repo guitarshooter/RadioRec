@@ -29,6 +29,10 @@ $starttime2 = $starttime;
 $endtime2 = $endtime;
 $starttime2 =~ s/://;
 $endtime2 =~ s/://;
+if($FM eq "BAY-FM" && $starttime2 <= 400){
+  $starttime2 = 2400 + $starttime2;
+  $endtime2 =  2400 + $endtime2;
+}
 $stime = substr($starttime,0,2);
 
 #eval{
@@ -42,6 +46,8 @@ foreach $row2 (@list) {
 #shift @$row2;
 $row2time = $$row2[0];
 $row2time =~ s/://;
+$row2time = substr($row2time,0,4);
+#print $row2time,"\n";
 if($row2time >= $starttime2 && $row2time <= $endtime2){ 
        $time = shift(@$row2);
        $str .= $time." ";
@@ -53,7 +59,7 @@ if($row2time >= $starttime2 && $row2time <= $endtime2){
 $str = $FM;
 }
 
-#print $str,"\n";
+print $str,"\n";
 #exit;
 
 #print $mp3file,"\n";
@@ -63,17 +69,19 @@ $str = $FM;
 sub mp3_writetag($mp3file,$title,$artist,$album,$comment){
 ($mp3file,$title,$artist,$album,$comment) = @_;
 
+MP3::Tag->config("write_v24" => 1);
 $mp3 = MP3::Tag->new($mp3file);
 #($title, $track, $artist, $album, $comment, $year, $genre) = $mp3->autoinfo();
 $mp3->get_tags();
-$mp3->new_tag("ID3v2");# if (!exists $mp3->{ID3v2});
+$mp3->{ID3v2}->remove_tag if (exists $mp3->{ID3v2});
+$mp3->new_tag("ID3v2");
 
 $mp3->{ID3v2}->add_frame("TIT2", 1, "$title");
 #$mp3->{ID3v2}->add_frame("TRCK", 1, "Track");
 $mp3->{ID3v2}->artist("$artist");
 
 $mp3->{ID3v2}->add_frame("TALB", 1, "$album");
-$mp3->{ID3v2}->comment("$str");
+$mp3->{ID3v2}->comment("$comment");
 $mp3->{ID3v2}->write_tag();
 $mp3->close();
 }
@@ -82,16 +90,17 @@ $mp3->close();
 sub get_list($fm){
 $fm = shift @_;
 
-#unless($fm eq "TFM" || $fm eq "BAY-FM"){
-#return;
-#	}
+unless($fm eq "TFM" || $fm eq "BAY-FM" || $fm eq "J-WAVE" || $fm eq "NACK5" || $fm eq "FMyokohama"){
+return;
+}
 
-#if($fm eq "TFM" or $fm eq "BAY-FM"){
 if($fm eq "BAY-FM"){
-$url = "http://www.media-click.net/PC/FM/$fm/site/OnAirList.asp?SEARCH=01";
-$headers = [qw(Time Title Artist)];
+$url = "http://song.bayfm.jp/song/";
+#$url="http://song.bayfm.jp/song/result.cgi?month=20110910&stime=&submit.x=72&submit.y=8&submit=Search";
+
+$headers = ['','',''];
 $depth = 0;
-$count = 2;
+$count = 0;
 $reverseFlg=1;
 }
 elsif($fm eq "FMyokohama"){
@@ -119,10 +128,9 @@ elsif($fm eq "TFM" ){
 $url = "http://www.tfm.co.jp/nowonair/search.php";
 }
 
-print $fm,"\n";
-print $url,"\n";
+#print $fm,"\n";
+#print $url,"\n";
 
-#my $ua = LWP::UserAgent->new(
 my $ua = WWW::Mechanize->new(
        agent =>        'Mozilla/4.0 (compatible; MSIE 6.0)',
        timeout =>      60,
@@ -130,10 +138,10 @@ my $ua = WWW::Mechanize->new(
        );
 #       print $url;
 my $response = $ua->get( $url );
-if($fm eq "BAY-FM"){
-#  $ua->follow_link("./pc/TodayResult.html");
-  $ua->follow_link(name => "viewer");
-}
+#if($fm eq "BAY-FM"){
+##  $ua->follow_link("./pc/TodayResult.html");
+#  $ua->follow_link(name => "viewer");
+#}
 #$content = $response->content;
 $content = $ua->content;
 print $content;
@@ -156,6 +164,7 @@ foreach $attr (@artist){
     $art = $attr->as_text;
     $attr_title = shift(@title);
     $tit = $attr_title->as_text;
+    $tit =~ s/( mixi.+ )//g;
     $attr_time = shift(@time);
     $tim = $attr_time->as_text;
     $tim_tit_art = [$tim,$tit,$art];
@@ -172,7 +181,7 @@ print "-------------------\n";
     $tit = $$attr{title1};
     $art = $$attr{artist1};
     $tim_tit_art = [$tim,$tit,$art];
-    unshift(@list,$tim_tit_art);
+    push(@list,$tim_tit_art);
 #    print $tim." ".$tit."/".$art."\n";
 #    print $$attr{title1};
 #     print Data::Dumper->Dump( [ $attr ],[ '*$attr' ] );
