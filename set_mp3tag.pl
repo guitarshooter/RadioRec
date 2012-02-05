@@ -35,9 +35,9 @@ if($FM eq "BAY-FM" && $starttime2 <= 400){
 }
 $stime = substr($starttime,0,2);
 
-#eval{
+eval{
 @list = &get_list($FM);
-#};
+};
 
 
 if(@list){
