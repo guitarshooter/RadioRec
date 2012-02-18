@@ -9,13 +9,18 @@ BINDIR="/home/shooter/bin"
 
 if [ $# -ne 5 ]; then
 echo "usage:$0 Time(m) CHANNEL Title Artist Album" 
-echo "CHANNEL:TFM BAY-FM J-WAVE NACK5 FMyokohama TBS QRR LFR NSB JORF"
+echo "CHANNEL:TFM BAY-FM J-WAVE NACK5 FMyokohama TBS QRR LFR NSB JORF NHK-FM NHK-R1 NHK-R2"
 exit 1;
 fi
 
 echo `date`": Record Start..." >$ROOTDIR/radikolog.txt
 cd $ROOTDIR
-$BINDIR/rec_radiko.sh $2 $1 $FILENAME.mp3
+case $2 in
+  NHK-* )
+    $BINDIR/rec_nhkradio.sh $2 $1 $FILENAME.mp3;;
+  *)
+    $BINDIR/rec_radiko.sh $2 $1 $FILENAME.mp3;;
+esac
 ENDTIME=`date +%H:%M`
 sleep 10
 $BINDIR/set_mp3tag.pl $FILENAME.mp3 $2 "$TITLE" "$4" "$5" $STARTTIME $ENDTIME >>$ROOTDIR/log.txt 2>&1
