@@ -5,8 +5,8 @@ use File::Basename;
 use Data::Dumper;
 
 $RSSFEED="podcast.xml";
-$DOCROOT="http://192.168.11.5/radio";
-$ROOTDIR="/var/www/radio";
+$DOCROOT="http://49.212.124.223/radio";
+$ROOTDIR="/var/www/html/radio";
 #$LOGFILE=$ROOTDIR/makerss.log;
 
 @ARGV = reverse sort @ARGV;
