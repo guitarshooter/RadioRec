@@ -6,7 +6,7 @@ RTMPDUMP=/usr/bin/rtmpdump
 SWFEXTRACT=/usr/local/bin/swfextract
 WGET=/usr/bin/wget
 
-playerurl=http://radiko.jp/player/swf/player_2.0.1.00.swf
+playerurl=http://radiko.jp/player/swf/player_3.0.0.01.swf
 playerfile=./player.swf
 keyfile=./authkey.png
 
@@ -44,7 +44,7 @@ fi
 # get keydata (need swftool)
 #
 if [ ! -f $keyfile ]; then
-  $SWFEXTRACT -b 5 $playerfile -o $keyfile
+  $SWFEXTRACT -b 14 $playerfile -o $keyfile
 
   if [ ! -f $keyfile ]; then
     echo "failed get keydata"
@@ -128,9 +128,9 @@ RECTIME=`expr $RECTIMEMIN \* 60 + $MARGINTIMEMIN \* 2 \* 60`
 # rtmpdump
 #
 $RTMPDUMP -v \
-         -r "rtmpe://radiko.smartstream.ne.jp" \
-         --playpath "simul-stream" \
-         --app "${CHANNEL}/_defInst_" \
+         -r "rtmpe://w-radiko.smartstream.ne.jp" \
+         --playpath "simul-stream.stream" \
+         --app "${CHANNEL}/_definst_" \
          -W $playerurl \
          -C S:"" -C S:"" -C S:"" -C S:$authtoken \
          --live \
