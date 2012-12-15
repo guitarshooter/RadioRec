@@ -1,9 +1,9 @@
 #!/bin/sh
 BASE64=/usr/bin/base64
-FFMPEG=/usr/local/bin/ffmpeg
+FFMPEG=/usr/bin/ffmpeg
 PERL=/usr/bin/perl
-RTMPDUMP=/usr/bin/rtmpdump
-SWFEXTRACT=/usr/local/bin/swfextract
+RTMPDUMP=/usr/local/bin/rtmpdump
+SWFEXTRACT=/usr/bin/swfextract
 WGET=/usr/bin/wget
 
 playerurl=http://radiko.jp/player/swf/player_3.0.0.01.swf
@@ -15,7 +15,7 @@ if [ $# -eq 3 ]; then
   RECTIMEMIN=$2
   FILENAME=$3
 else
-  echo "usage : $0 CHANNEL RECTIMEMIN"
+  echo "usage : $0 CHANNEL RECTIMEMIN FILENAME"
   echo "CHANNEL:TFM BAY-FM J-WAVE NACK5 FMyokohama TBS QRR LFR NSB JORF"
   exit 1
 fi
